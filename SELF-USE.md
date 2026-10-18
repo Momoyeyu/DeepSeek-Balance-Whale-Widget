@@ -10,7 +10,7 @@ open fixes without waiting for upstream merges:
 - `fix/client-module-lifecycle` — PR #270: manage the widget client through
   `dsh.client` so disabling/enabling the bundle takes effect (disable reloads
   once; enable is live).
-- `fix/bubble-text-fit` — PR against #159: fit the bubble text inside the
+- `fix/bubble-text-fit` — PR #272 (Refs #159): fit the bubble text inside the
   ellipse after render; row padding/radius scale with `--dshwv-u`.
 
 Upstream is kept as the `origin` remote, so this branch can be refreshed with:
