@@ -109,6 +109,9 @@ jobs:
       #   ④ 检查日常ci与发版ci流程是否一致        本文件与 ci.yml 都要覆盖同一组关键检查
       #   ⑤ 检查页面动态内容是否写清来源          innerHTML 接了变量就必须登记在 tools/ci-audit.allowlist.json
       # 通过标准：五项都没有报错（退出码 0）。审计不过 → 不允许发布。
+      - name: Client lifecycle regression tests
+        run: node --test tests/*.test.*
+
       - name: Core invariants audit (incl. packed artifact)
         run: node tools/ci-audit.mjs
 
