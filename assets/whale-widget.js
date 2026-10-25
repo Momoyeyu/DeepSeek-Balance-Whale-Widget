@@ -21080,6 +21080,12 @@ audioCropFileInput.type = 'file'
 audioCropFileInput.accept = 'audio/*'
 audioCropFileInput.style.display = 'none'
 dshwBodyAppend(audioCropFileInput)
+var audioCropReaders = new Set()
+dshwCleanups.push(function () {
+  audioCropReaders.forEach(function (reader) { if (reader.readyState === 1) reader.abort() })
+  audioCropReaders.clear()
+  audioCropBuffer = null
+})
 var audioCropTarget = null // 'press' | 'release'
 var audioCropCtx = null // AudioContext
 var audioCropBuffer = null // AudioBuffer
@@ -21095,16 +21101,20 @@ audioEditReleaseImport.addEventListener('click', function () {
   audioCropFileInput.click()
 })
 audioCropFileInput.addEventListener('change', function () {
+  if (!dshwActive) return
   var f = audioCropFileInput.files && audioCropFileInput.files[0]
   audioCropFileInput.value = ''
   if (!f) return
   var reader = new FileReader()
+  audioCropReaders.add(reader)
+  reader.onloadend = function () { audioCropReaders.delete(reader) }
   reader.onload = function () {
-    openAudioCrop(reader.result, f.name)
+    if (dshwActive) openAudioCrop(reader.result, f.name)
   }
   reader.readAsArrayBuffer(f)
 })
 function openAudioCrop(arrayBuf, fileName) {
+  if (!dshwActive) return
   try {
     audioCropFileBase = (fileName || '音频片段').replace(/.[^.]+$/, '')
     audioCropZoom = 1
@@ -21115,7 +21125,8 @@ function openAudioCrop(arrayBuf, fileName) {
       try { audioCropCtx = dshwAudioContext(new (window.AudioContext || window.webkitAudioContext)()) } catch (err) { audioCropCtx = null }
     }
     if (!audioCropCtx) { alert('当前浏览器不支持音频解码'); return }
-    audioCropCtx.decodeAudioData(arrayBuf, function (buf) {
+    var decoding = audioCropCtx.decodeAudioData(arrayBuf, function (buf) {
+      if (!dshwActive) return
       audioCropBuffer = buf
       audioCropStart.value = '0'
       audioCropEnd.value = '100'
@@ -21128,7 +21139,9 @@ function openAudioCrop(arrayBuf, fileName) {
       updateAudioCropOkState()
       dshwLayerUp(audioCropMask, 20500) // v744：音频裁剪也可能从资源管理(20300)里打开
       audioCropMask.style.display = 'flex'
-    }, function () { alert('音频解码失败') })
+    }, function () { if (dshwActive) alert('音频解码失败') })
+    // Modern implementations return a rejecting Promise even with callbacks.
+    if (decoding && decoding.catch) decoding.catch(function () {})
   } catch (err) {}
 }
 function audioCropRange() {
