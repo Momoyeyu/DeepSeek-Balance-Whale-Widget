@@ -97,4 +97,4 @@ dsh-whale-widget/
 
 ### 账本回归测试
 
-先运行 `npm ci`，再运行 `node --test assessment/ledger-transactions.test.cjs` 和 `node assessment/ledger-race.cjs`。测试使用临时目录和独立进程，不读取真实用户账本，也不需要 API key。账本的所有修改都必须经 `updateUsageLedger()`，在同一把锁内重新读盘；不要把锁放到写回函数里，也不要把锁内快照带到异步任务完成后再写回。
+先运行 `npm ci`，再运行 `node --test assessment/*.test.cjs` 和 `node assessment/ledger-race.cjs`。测试使用临时目录和独立进程，不读取真实用户账本，也不需要 API key。账本的所有修改都必须经 `updateUsageLedger()`，在同一把锁内重新读盘；不要把锁放到写回函数里，也不要把锁内快照带到异步任务完成后再写回。

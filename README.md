@@ -509,6 +509,6 @@ curl http://127.0.0.1:3080/dsh-whale/audio.json
 源码开发先运行 `npm ci` 安装依赖；回归检查：
 
 ```sh
-node --test assessment/ledger-transactions.test.cjs
+node --test assessment/*.test.cjs
 node assessment/ledger-race.cjs
 ```
